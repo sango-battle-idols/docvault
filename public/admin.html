@@ -128,7 +128,7 @@
   <label for="inp-secret">Admin Secret</label>
   <input id="inp-secret" type="password" placeholder="Your ADMIN_SECRET" />
 
-  <button class="primary" onclick="generate()">Generate / Renew Link</button>
+  <button class="primary" id="generate-btn">Generate / Renew Link</button>
 
   <div id="docs-section" style="display:none">
     <h2>Active documents this session</h2>
@@ -147,6 +147,9 @@
 <div id="toast"></div>
 
 <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("generate-btn").addEventListener("click", generate);
+  });
   // Session store: { [slug]: { doc, permanentLink, directLink, expiresAt } }
   const sessionDocs = {};
 
