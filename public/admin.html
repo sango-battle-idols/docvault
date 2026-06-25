@@ -121,6 +121,10 @@
   <input id="inp-doc" type="text" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms" />
   <p class="hint">From the URL: docs.google.com/document/d/<strong>THIS_PART</strong>/edit</p>
 
+  <label for="inp-bg">Page Background Color</label>
+  <input id="inp-bg" type="text" placeholder="#1b1208" style="width:140px;display:inline-block;" />
+  <input id="inp-bg-pick" type="color" value="#1b1208" style="height:36px;width:44px;padding:2px;border-radius:4px;cursor:pointer;vertical-align:middle;margin-left:8px;background:#141417;border:1px solid #242428;" />
+
   <label for="inp-secret">Admin Secret</label>
   <input id="inp-secret" type="password" placeholder="Your ADMIN_SECRET" />
 
@@ -159,9 +163,10 @@
   }
 
   async function generate() {
-    const slug   = document.getElementById("inp-slug").value.trim().replace(/^\//, "");
+    const slug   = document.getElementById("inp-slug").value.trim().replace(/^//, "");
     const doc    = document.getElementById("inp-doc").value.trim();
     const secret = document.getElementById("inp-secret").value.trim();
+    const bgColor = document.getElementById("inp-bg").value.trim() || document.getElementById("inp-bg-pick").value;
 
     if (!slug || !doc || !secret) { toast("Fill in all three fields.", "error"); return; }
 
@@ -172,7 +177,7 @@
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, doc, secret }),
+        body: JSON.stringify({ slug, doc, secret, bgColor }),
       });
       const data = await res.json();
 
@@ -227,6 +232,16 @@
       setTimeout(() => btn.textContent = orig, 2000);
     });
   }
+
+  // Sync color picker and text field
+  document.getElementById("inp-bg-pick").addEventListener("input", e => {
+    document.getElementById("inp-bg").value = e.target.value;
+  });
+  document.getElementById("inp-bg").addEventListener("input", e => {
+    if (/^#[0-9a-f]{6}$/i.test(e.target.value)) {
+      document.getElementById("inp-bg-pick").value = e.target.value;
+    }
+  });
 
   function renewDoc(slug) {
     const d = sessionDocs[slug];
