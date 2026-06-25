@@ -34,6 +34,13 @@ export default async function handler(req, res) {
     return res.status(410).json({ error: "expired" });
   }
 
+  // Get bgColor stored with the slug
+  const slugRaw = await redis.get(`slug:${slug}`);
+  const slugData = slugRaw
+    ? (typeof slugRaw === "string" ? JSON.parse(slugRaw) : slugRaw)
+    : null;
+  const bgColor = slugData?.bgColor || null;
+
   try {
     const exportUrl = `https://docs.google.com/document/d/${doc}/export?format=html`;
     const response = await fetch(exportUrl, {
@@ -48,39 +55,17 @@ export default async function handler(req, res) {
     }
 
     const html = await response.text();
-
-    // Extract body content
     const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
     const bodyContent = bodyMatch ? bodyMatch[1] : html;
 
-    // Extract background color from body style attribute
-    let bgColor = null;
-    const bodyTagMatch = html.match(/<body([^>]*)>/i);
-    if (bodyTagMatch) {
-      const styleMatch = bodyTagMatch[1].match(/style="([^"]*)"/i);
-      if (styleMatch) {
-        const bgMatch = styleMatch[1].match(/background-color\s*:\s*([^;]+)/i);
-        if (bgMatch) bgColor = bgMatch[1].trim();
-      }
-    }
-
-    // Fallback: check <style> blocks for body background-color
-    if (!bgColor) {
-      const styleBlocks = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi) || [];
-      for (const block of styleBlocks) {
-        const m = block.match(/body\s*\{[^}]*background-color\s*:\s*([^;}\s]+)/i);
-        if (m) { bgColor = m[1].trim(); break; }
-      }
-    }
-
-    // Extract all style blocks to pass through Google's text colors
+    // Extract Google's style blocks for text colors
     const styleBlocks = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi) || [];
     const docStyles = styleBlocks.map(b => b.replace(/<\/?style[^>]*>/gi, "")).join("\n");
 
     res.setHeader("Cache-Control", "no-store");
     res.status(200).json({
       content: bodyContent,
-      bgColor: bgColor || null,
+      bgColor,
       docStyles: docStyles || null,
       expiresAt: new Date(expiresAt).toISOString(),
     });
