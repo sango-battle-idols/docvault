@@ -11,15 +11,12 @@
 
     :root {
       --bg:      #130810;
-      --surface: #1b2b27;
       --border:  #2a1e22;
       --border2: #253028;
-      --muted:   #3d2e35;
       --subtle:  #7a6060;
       --body:    #c4b4b0;
       --bright:  #f0e8e0;
       --gold:    #c49a3c;
-      --gold2:   #e0b84a;
       --font:    "PT Sans Narrow", sans-serif;
     }
 
@@ -31,7 +28,7 @@
       font-size: 15px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
-      transition: background 0.4s ease;
+      transition: background 0.3s ease;
     }
 
     body::before {
@@ -48,7 +45,6 @@
     header {
       display: flex;
       align-items: center;
-      gap: 12px;
       padding: 16px 28px;
       border-bottom: 1px solid var(--border);
       position: sticky;
@@ -64,22 +60,6 @@
       font-weight: 700;
       letter-spacing: 0.1em;
       color: var(--gold);
-    }
-
-
-      margin-left: auto;
-      font-family: var(--font);
-      font-size: 12px;
-      padding: 3px 10px;
-      border-radius: 2px;
-      border: 1px solid var(--border);
-      color: var(--subtle);
-      display: none;
-    }
-
-      display: inline-block;
-      color: var(--gold2);
-      border-color: var(--gold);
     }
 
     main {
@@ -170,7 +150,7 @@
       color: var(--subtle);
     }
 
-    /* Doc content: let Google's own colors and alignment through */
+    /* Let Google's styles control colors; only enforce font and centering */
     #doc-content {
       text-align: center;
     }
@@ -178,13 +158,14 @@
       font-family: var(--font) !important;
       max-width: 100%;
     }
-    #doc-content p  { margin-bottom: 1em; }
-    #doc-content a  { text-decoration: underline; }
-    #doc-content table { border-collapse: collapse; width: 100%; margin: 1.5em 0; }
+    #doc-content p { margin-bottom: 1em; }
+    #doc-content a { text-decoration: underline; }
+    #doc-content table { border-collapse: collapse; width: 100%; margin: 1.5em auto; }
     #doc-content td, #doc-content th { padding: 8px 12px; text-align: left; }
     #doc-content ul, #doc-content ol { padding-left: 1.5em; margin-bottom: 1em; display: inline-block; text-align: left; }
     #doc-content li { margin-bottom: 0.3em; }
     #doc-content hr { border: none; border-top: 1px solid var(--border2); margin: 2em 0; }
+    #doc-content img { max-width: 100%; height: auto; }
 
     .divider-line {
       width: 48px;
@@ -193,24 +174,27 @@
       margin: 16px auto;
       opacity: 0.5;
     }
+
+    /* Injected Google Doc styles go here */
+    #doc-style-inject {}
   </style>
+  <style id="doc-style-inject"></style>
 </head>
 <body>
 
 <header>
   <span class="logo">｢珊瑚 | SANGŌ」</span>
-
 </header>
 
 <main>
 
-  <div id="state-loading" class="state" style="display:none">
+  <div id="state-loading" class="state">
     <div class="spinner"></div>
     <div class="state-title">Loading…</div>
     <p class="state-desc">Retrieving document.</p>
   </div>
 
-  <div id="state-landing" class="state">
+  <div id="state-landing" class="state" style="display:none">
     <div class="state-icon">
       <img class="sango-emblem" src="https://64.media.tumblr.com/0304300b89525be61d2e05e78b81ddf8/10464a0a1d1c18c3-c5/s1280x1920/6e8a6d6a32053b16a74df0f34340dea5025558e1.pnj" alt="Sangō Idol-Defense Force emblem" />
     </div>
@@ -265,7 +249,7 @@ I don't think you'll find it.<em>— Kamikawa Hiromi</em></p>
     }
   });
 
-  const path = window.location.pathname.replace(/^/+|/+$/g, "").trim();
+  const path = window.location.pathname.replace(/^\//, "").trim();
   const params = new URLSearchParams(window.location.search);
   const tokenInUrl = params.get("sn");
 
@@ -297,8 +281,24 @@ I don't think you'll find it.<em>— Kamikawa Hiromi</em></p>
           return;
         }
 
-        // Apply doc background color to page
+        // Apply Google Doc background color to page
         if (data.bgColor) {
           document.body.style.background = data.bgColor;
         }
 
+        // Inject Google Doc's own styles (handles text colors, heading colors, etc.)
+        if (data.docStyles) {
+          document.getElementById("doc-style-inject").textContent = data.docStyles;
+        }
+
+        document.getElementById("doc-content").innerHTML = data.content;
+        showDoc();
+      })
+      .catch(() => {
+        document.getElementById("error-msg").textContent = "Network error. Please try again.";
+        showState("error");
+      });
+  }
+</script>
+</body>
+</html>
