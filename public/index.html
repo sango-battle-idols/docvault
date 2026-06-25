@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --bg:      #130810;
       --border:  #2a1e22;
@@ -19,7 +18,6 @@
       --gold:    #c49a3c;
       --font:    "PT Sans Narrow", sans-serif;
     }
-
     html, body {
       min-height: 100%;
       background: var(--bg);
@@ -30,7 +28,6 @@
       -webkit-font-smoothing: antialiased;
       transition: background 0.3s ease;
     }
-
     body::before {
       content: '';
       position: fixed;
@@ -41,7 +38,6 @@
       pointer-events: none;
       z-index: 0;
     }
-
     header {
       display: flex;
       align-items: center;
@@ -53,7 +49,6 @@
       backdrop-filter: blur(8px);
       z-index: 10;
     }
-
     .logo {
       font-family: var(--font);
       font-size: 15px;
@@ -61,7 +56,6 @@
       letter-spacing: 0.1em;
       color: var(--gold);
     }
-
     main {
       max-width: 780px;
       margin: 0 auto;
@@ -69,16 +63,13 @@
       position: relative;
       z-index: 1;
     }
-
     .state { text-align: center; padding: 80px 0; }
-
     .state-icon {
       margin-bottom: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
     .state-title {
       font-family: var(--font);
       font-size: 22px;
@@ -88,7 +79,6 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
-
     .state-desc {
       color: var(--subtle);
       font-family: var(--font);
@@ -98,7 +88,6 @@
       line-height: 2;
       white-space: pre-line;
     }
-
     .state-desc em {
       display: block;
       margin-top: 12px;
@@ -107,7 +96,6 @@
       font-size: 13px;
       letter-spacing: 0.06em;
     }
-
     .spinner {
       width: 28px; height: 28px;
       border: 1.5px solid var(--border);
@@ -117,16 +105,13 @@
       margin: 0 auto 24px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .sango-emblem {
       width: 120px;
       height: 120px;
       filter: drop-shadow(0 0 16px rgba(196,154,60,0.25));
       object-fit: contain;
     }
-
     #doc-container { display: none; }
-
     .doc-meta {
       display: flex;
       align-items: center;
@@ -149,15 +134,8 @@
       text-transform: uppercase;
       color: var(--subtle);
     }
-
-    /* Let Google's styles control colors; only enforce font and centering */
-    #doc-content {
-      text-align: center;
-    }
-    #doc-content * {
-      font-family: var(--font) !important;
-      max-width: 100%;
-    }
+    #doc-content { text-align: center; }
+    #doc-content * { font-family: var(--font) !important; max-width: 100%; }
     #doc-content p { margin-bottom: 1em; }
     #doc-content a { text-decoration: underline; }
     #doc-content table { border-collapse: collapse; width: 100%; margin: 1.5em auto; }
@@ -166,7 +144,6 @@
     #doc-content li { margin-bottom: 0.3em; }
     #doc-content hr { border: none; border-top: 1px solid var(--border2); margin: 2em 0; }
     #doc-content img { max-width: 100%; height: auto; }
-
     .divider-line {
       width: 48px;
       height: 1px;
@@ -174,9 +151,6 @@
       margin: 16px auto;
       opacity: 0.5;
     }
-
-    /* Injected Google Doc styles go here */
-    #doc-style-inject {}
   </style>
   <style id="doc-style-inject"></style>
 </head>
@@ -208,6 +182,7 @@ I don't think you'll find it.<em>— Kamikawa Hiromi</em></p>
     <div class="state-icon">
       <img class="sango-emblem" src="https://64.media.tumblr.com/0304300b89525be61d2e05e78b81ddf8/10464a0a1d1c18c3-c5/s1280x1920/6e8a6d6a32053b16a74df0f34340dea5025558e1.pnj" alt="Sangō Idol-Defense Force emblem" />
     </div>
+    <div class="divider-line"></div>
     <div class="state-title">Missing Document</div>
     <p class="state-desc">Are you looking for something here?
 I don't think you'll find it.<em>— Kamikawa Hiromi</em></p>
@@ -217,6 +192,14 @@ I don't think you'll find it.<em>— Kamikawa Hiromi</em></p>
     <span class="state-icon">⚠️</span>
     <div class="state-title">Something Went Wrong</div>
     <p class="state-desc" id="error-msg">Could not load this document.</p>
+  </div>
+
+  <div id="doc-container">
+    <div class="doc-meta">
+      <div class="doc-meta-dot"></div>
+      <span class="doc-meta-label">Read Only</span>
+    </div>
+    <div id="doc-content"></div>
   </div>
 
 </main>
@@ -275,17 +258,12 @@ I don't think you'll find it.<em>— Kamikawa Hiromi</em></p>
           showState("error");
           return;
         }
-
-        // Apply Google Doc background color to page
         if (data.bgColor) {
           document.body.style.background = data.bgColor;
         }
-
-        // Inject Google Doc's own styles (handles text colors, heading colors, etc.)
         if (data.docStyles) {
           document.getElementById("doc-style-inject").textContent = data.docStyles;
         }
-
         document.getElementById("doc-content").innerHTML = data.content;
         showDoc();
       })
