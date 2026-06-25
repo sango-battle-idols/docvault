@@ -215,6 +215,13 @@ I don't think you'll find it.<em>— Kamikawa Hiromi</em></p>
     }
   });
 
+  document.addEventListener("selectionchange", () => {
+    const sel = window.getSelection();
+    if (sel && sel.toString().length > 15) {
+      sel.collapse(sel.anchorNode, sel.anchorOffset);
+    }
+  });
+
   const path = window.location.pathname.replace(/^\//, "").trim();
   const params = new URLSearchParams(window.location.search);
   const tokenInUrl = params.get("sn");
