@@ -1,6 +1,7 @@
 {
   "name": "docvault",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vercel dev",
     "build": "echo 'No build step needed'"
