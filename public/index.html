@@ -204,13 +204,13 @@
 
 <main>
 
-  <div id="state-loading" class="state">
+  <div id="state-loading" class="state" style="display:none">
     <div class="spinner"></div>
     <div class="state-title">Loading…</div>
     <p class="state-desc">Retrieving document.</p>
   </div>
 
-  <div id="state-landing" class="state" style="display:none">
+  <div id="state-landing" class="state">
     <div class="state-icon">
       <img class="sango-emblem" src="https://64.media.tumblr.com/0304300b89525be61d2e05e78b81ddf8/10464a0a1d1c18c3-c5/s1280x1920/6e8a6d6a32053b16a74df0f34340dea5025558e1.pnj" alt="Sangō Idol-Defense Force emblem" />
     </div>
@@ -265,7 +265,7 @@ I don't think you'll find it.<em>— Kamikawa Hiromi</em></p>
     }
   });
 
-  const path = window.location.pathname.replace(/^\//, "").trim();
+  const path = window.location.pathname.replace(/^/+|/+$/g, "").trim();
   const params = new URLSearchParams(window.location.search);
   const tokenInUrl = params.get("sn");
 
