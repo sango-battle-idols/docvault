@@ -166,7 +166,7 @@
   }
 
   async function generate() {
-    const slug   = document.getElementById("inp-slug").value.trim().replace(/^//, "");
+    const slug   = document.getElementById("inp-slug").value.trim().replace(/^\//, '');
     const doc    = document.getElementById("inp-doc").value.trim();
     const secret = document.getElementById("inp-secret").value.trim();
     const bgColor = document.getElementById("inp-bg").value.trim() || document.getElementById("inp-bg-pick").value;
