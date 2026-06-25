@@ -64,7 +64,7 @@
     }
     .state-title {
       font-family: var(--font);
-      font-size: 22px;
+      font-size: 32px;
       font-weight: 700;
       color: var(--bright);
       margin-bottom: 16px;
@@ -74,7 +74,7 @@
     .state-desc {
       color: var(--subtle);
       font-family: var(--font);
-      font-size: 14px;
+      font-size: 20px;
       max-width: 340px;
       margin: 0 auto;
       line-height: 2;
@@ -85,7 +85,7 @@
       margin-top: 12px;
       font-style: normal;
       color: var(--gold);
-      font-size: 13px;
+      font-size: 18px;
       letter-spacing: 0.06em;
     }
     .spinner {
@@ -179,7 +179,9 @@ I don't think you'll find it.<em>— Kamikawa Hiromi</em></p>
   </div>
 
   <div id="state-error" class="state" style="display:none">
-    <span class="state-icon">⚠️</span>
+    <div class="state-icon">
+      <img class="sango-emblem" src="https://64.media.tumblr.com/0304300b89525be61d2e05e78b81ddf8/10464a0a1d1c18c3-c5/s1280x1920/6e8a6d6a32053b16a74df0f34340dea5025558e1.pnj" alt="Sangō Idol-Defense Force emblem" />
+    </div>
     <div class="state-title">Something Went Wrong</div>
     <p class="state-desc" id="error-msg">Could not load this document.</p>
   </div>
