@@ -1,4 +1,3 @@
-// api/doc.js
 import { Redis } from "@upstash/redis";
 
 const redis = new Redis({
@@ -54,12 +53,11 @@ export default async function handler(req, res) {
     const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
     const bodyContent = bodyMatch ? bodyMatch[1] : html;
 
-    // Extract background color from body tag style
+    // Extract background color from body style attribute
     let bgColor = null;
     const bodyTagMatch = html.match(/<body([^>]*)>/i);
     if (bodyTagMatch) {
-      const bodyAttrs = bodyTagMatch[1];
-      const styleMatch = bodyAttrs.match(/style="([^"]*)"/i);
+      const styleMatch = bodyTagMatch[1].match(/style="([^"]*)"/i);
       if (styleMatch) {
         const bgMatch = styleMatch[1].match(/background-color\s*:\s*([^;]+)/i);
         if (bgMatch) bgColor = bgMatch[1].trim();
@@ -75,10 +73,15 @@ export default async function handler(req, res) {
       }
     }
 
+    // Extract all style blocks to pass through Google's text colors
+    const styleBlocks = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi) || [];
+    const docStyles = styleBlocks.map(b => b.replace(/<\/?style[^>]*>/gi, "")).join("\n");
+
     res.setHeader("Cache-Control", "no-store");
     res.status(200).json({
       content: bodyContent,
       bgColor: bgColor || null,
+      docStyles: docStyles || null,
       expiresAt: new Date(expiresAt).toISOString(),
     });
   } catch {
