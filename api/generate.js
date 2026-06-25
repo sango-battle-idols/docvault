@@ -1,7 +1,3 @@
-// api/generate.js
-// POST /api/generate
-// Body: { "slug": "training", "doc": "GOOGLE_DOC_ID", "secret": "YOUR_ADMIN_SECRET" }
-
 import { Redis } from "@upstash/redis";
 
 const redis = new Redis({
@@ -10,7 +6,7 @@ const redis = new Redis({
 });
 
 function makeToken(slug, doc) {
-  const expiresAt = Date.now() + 2 * 24 * 60 * 60 * 1000; // 2 days
+  const expiresAt = Date.now() + 2 * 24 * 60 * 60 * 1000;
   const token = Buffer.from(JSON.stringify({ slug, doc, expiresAt })).toString("base64url");
   return { token, expiresAt };
 }
@@ -18,7 +14,7 @@ function makeToken(slug, doc) {
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { slug, doc, secret } = req.body || {};
+  const { slug, doc, secret, bgColor } = req.body || {};
 
   if (!slug)   return res.status(400).json({ error: "Missing slug" });
   if (!doc)    return res.status(400).json({ error: "Missing doc id" });
@@ -27,8 +23,8 @@ export default async function handler(req, res) {
 
   const { token, expiresAt } = makeToken(slug, doc);
 
-  // Persist slug → doc mapping forever
-  await redis.set(`slug:${slug}`, JSON.stringify({ doc }));
+  // Persist slug → doc + bgColor mapping
+  await redis.set(`slug:${slug}`, JSON.stringify({ doc, bgColor: bgColor || null }));
 
   // Store current token
   await redis.set(`token:${slug}`, JSON.stringify({ token, expiresAt }));
@@ -39,6 +35,5 @@ export default async function handler(req, res) {
     permanentLink: `${base}/${slug}`,
     token,
     expiresAt: new Date(expiresAt).toISOString(),
-    note: "Share 'permanentLink' in Discord. Tokens auto-renew when expired."
   });
 }
